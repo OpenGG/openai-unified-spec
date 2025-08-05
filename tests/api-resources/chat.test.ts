@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import OpenAIUnifiedFiltered from 'openai-unified-filtered';
+import OpenAIUnifiedFiltered from '@opengg/openai-unified';
 
 const client = new OpenAIUnifiedFiltered({
   apiKey: 'My API Key',

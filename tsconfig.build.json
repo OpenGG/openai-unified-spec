@@ -5,8 +5,8 @@
   "compilerOptions": {
     "rootDir": "./dist/src",
     "paths": {
-      "openai-unified-filtered/*": ["dist/src/*"],
-      "openai-unified-filtered": ["dist/src/index.ts"]
+      "@opengg/openai-unified/*": ["dist/src/*"],
+      "@opengg/openai-unified": ["dist/src/index.ts"]
     },
     "noEmit": false,
     "declaration": true,

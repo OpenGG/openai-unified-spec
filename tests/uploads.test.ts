@@ -1,6 +1,6 @@
 import fs from 'fs';
-import type { ResponseLike } from 'openai-unified-filtered/internal/to-file';
-import { toFile } from 'openai-unified-filtered/core/uploads';
+import type { ResponseLike } from '@opengg/openai-unified/internal/to-file';
+import { toFile } from '@opengg/openai-unified/core/uploads';
 import { File } from 'node:buffer';
 
 class MyClass {
@@ -97,7 +97,7 @@ describe('missing File error message', () => {
   });
 
   test('is thrown', async () => {
-    const uploads = await import('openai-unified-filtered/core/uploads');
+    const uploads = await import('@opengg/openai-unified/core/uploads');
     await expect(
       uploads.toFile(mockResponse({ url: 'https://example.com/my/audio.mp3' })),
     ).rejects.toMatchInlineSnapshot(

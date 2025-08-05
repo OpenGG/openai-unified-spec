@@ -1,10 +1,10 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import { APIPromise } from 'openai-unified-filtered/core/api-promise';
+import { APIPromise } from '@opengg/openai-unified/core/api-promise';
 
 import util from 'node:util';
-import OpenAIUnifiedFiltered from 'openai-unified-filtered';
-import { APIUserAbortError } from 'openai-unified-filtered';
+import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import { APIUserAbortError } from '@opengg/openai-unified';
 const defaultFetch = fetch;
 
 describe('instantiate client', () => {
