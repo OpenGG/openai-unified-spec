@@ -1,6 +1,6 @@
 {
-  "name": "openai-unified",
-  "version": "0.0.1-alpha.0",
+  "name": "@opengg/openai-unified",
+  "version": "1.0.0",
   "description": "The official TypeScript library for the OpenAI Unified API",
   "author": "OpenAI Unified <>",
   "types": "dist/index.d.ts",
