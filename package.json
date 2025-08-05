@@ -1,12 +1,12 @@
 {
-  "name": "@opengg/openai-unified",
-  "version": "1.0.0",
-  "description": "The official TypeScript library for the OpenAI Unified Filtered API",
-  "author": "OpenAI Unified Filtered <>",
+  "name": "openai-unified",
+  "version": "0.0.1-alpha.0",
+  "description": "The official TypeScript library for the OpenAI Unified API",
+  "author": "OpenAI Unified <>",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "type": "commonjs",
-  "repository": "github:OpenGG/openai-unified-spec",
+  "repository": "github:stainless-sdks/openai-unified-typescript",
   "license": "MIT",
   "packageManager": "yarn@1.22.22",
   "files": [

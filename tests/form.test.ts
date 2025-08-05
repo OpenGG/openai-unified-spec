@@ -1,5 +1,5 @@
-import { multipartFormRequestOptions, createForm } from '@opengg/openai-unified/internal/uploads';
-import { toFile } from '@opengg/openai-unified/core/uploads';
+import { multipartFormRequestOptions, createForm } from 'openai-unified/internal/uploads';
+import { toFile } from 'openai-unified/core/uploads';
 
 describe('form data validation', () => {
   test('valid values do not error', async () => {

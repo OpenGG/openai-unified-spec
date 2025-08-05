@@ -1,8 +1,8 @@
-# OpenAI Unified Filtered TypeScript API Library
+# OpenAI Unified TypeScript API Library
 
-[![NPM version](<https://img.shields.io/npm/v/@opengg/openai-unified.svg?label=npm%20(stable)>)](https://npmjs.org/package/@opengg/openai-unified) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/@opengg/openai-unified)
+[![NPM version](<https://img.shields.io/npm/v/openai-unified.svg?label=npm%20(stable)>)](https://npmjs.org/package/openai-unified) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/openai-unified)
 
-This library provides convenient access to the OpenAI Unified Filtered REST API from server-side TypeScript or JavaScript.
+This library provides convenient access to the OpenAI Unified REST API from server-side TypeScript or JavaScript.
 
 The REST API documentation can be found on [help.openai.com](https://help.openai.com/). The full API of this library can be found in [api.md](api.md).
 
@@ -11,8 +11,11 @@ It is generated with [Stainless](https://www.stainless.com/).
 ## Installation
 
 ```sh
-npm install @opengg/openai-unified
+npm install git+ssh://git@github.com:stainless-sdks/openai-unified-typescript.git
 ```
+
+> [!NOTE]
+> Once this package is [published to npm](https://www.stainless.com/docs/guides/publish), this will become: `npm install openai-unified`
 
 ## Usage
 
@@ -20,15 +23,15 @@ The full API of this library can be found in [api.md](api.md).
 
 <!-- prettier-ignore -->
 ```js
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 
-const client = new OpenAIUnifiedFiltered({
-  apiKey: process.env['OPENAI_UNIFIED_FILTERED_API_KEY'], // This is the default and can be omitted
+const client = new OpenAIUnified({
+  apiKey: process.env['OPENAI_UNIFIED_API_KEY'], // This is the default and can be omitted
 });
 
 const response = await client.chat.createCompletion({
-  messages: [{ role: 'user', content: 'hello' }],
-  model: 'string',
+  messages: [{ content: 'string', role: 'developer' }],
+  model: 'gpt-4o',
 });
 
 console.log(response.id);
@@ -40,19 +43,17 @@ This library includes TypeScript definitions for all request params and response
 
 <!-- prettier-ignore -->
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 
-const client = new OpenAIUnifiedFiltered({
-  apiKey: process.env['OPENAI_UNIFIED_FILTERED_API_KEY'], // This is the default and can be omitted
+const client = new OpenAIUnified({
+  apiKey: process.env['OPENAI_UNIFIED_API_KEY'], // This is the default and can be omitted
 });
 
-const params: OpenAIUnifiedFiltered.ChatCreateCompletionParams = {
-  messages: [{ role: 'user', content: 'hello' }],
-  model: 'string',
+const params: OpenAIUnified.ChatCreateCompletionParams = {
+  messages: [{ content: 'string', role: 'developer' }],
+  model: 'gpt-4o',
 };
-const response: OpenAIUnifiedFiltered.ChatCreateCompletionResponse = await client.chat.createCompletion(
-  params,
-);
+const response: OpenAIUnified.ChatCreateCompletionResponse = await client.chat.createCompletion(params);
 ```
 
 Documentation for each method, request param, and response field are available in docstrings and will appear on hover in most modern editors.
@@ -66,9 +67,9 @@ a subclass of `APIError` will be thrown:
 <!-- prettier-ignore -->
 ```ts
 const response = await client.chat
-  .createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' })
+  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' })
   .catch(async (err) => {
-    if (err instanceof OpenAIUnifiedFiltered.APIError) {
+    if (err instanceof OpenAIUnified.APIError) {
       console.log(err.status); // 400
       console.log(err.name); // BadRequestError
       console.log(err.headers); // {server: 'nginx', ...}
@@ -102,12 +103,12 @@ You can use the `maxRetries` option to configure or disable this:
 <!-- prettier-ignore -->
 ```js
 // Configure the default for all requests:
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   maxRetries: 0, // default is 2
 });
 
 // Or, configure per-request:
-await client.chat.createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' }, {
+await client.chat.createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' }, {
   maxRetries: 5,
 });
 ```
@@ -119,12 +120,12 @@ Requests time out after 1 minute by default. You can configure this with a `time
 <!-- prettier-ignore -->
 ```ts
 // Configure the default for all requests:
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   timeout: 20 * 1000, // 20 seconds (default is 1 minute)
 });
 
 // Override per-request:
-await client.chat.createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' }, {
+await client.chat.createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' }, {
   timeout: 5 * 1000,
 });
 ```
@@ -145,16 +146,16 @@ Unlike `.asResponse()` this method consumes the body, returning once it is parse
 
 <!-- prettier-ignore -->
 ```ts
-const client = new OpenAIUnifiedFiltered();
+const client = new OpenAIUnified();
 
 const response = await client.chat
-  .createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' })
+  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' })
   .asResponse();
 console.log(response.headers.get('X-My-Header'));
 console.log(response.statusText); // access the underlying Response object
 
 const { data: response, response: raw } = await client.chat
-  .createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' })
+  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' })
   .withResponse();
 console.log(raw.headers.get('X-My-Header'));
 console.log(response.id);
@@ -170,13 +171,13 @@ console.log(response.id);
 
 The log level can be configured in two ways:
 
-1. Via the `OPENAI_UNIFIED_FILTERED_LOG` environment variable
+1. Via the `OPENAI_UNIFIED_LOG` environment variable
 2. Using the `logLevel` client option (overrides the environment variable if set)
 
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   logLevel: 'debug', // Show all log messages
 });
 ```
@@ -202,13 +203,13 @@ When providing a custom logger, the `logLevel` option still controls which messa
 below the configured level will not be sent to your logger.
 
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 import pino from 'pino';
 
 const logger = pino();
 
-const client = new OpenAIUnifiedFiltered({
-  logger: logger.child({ name: 'OpenAIUnifiedFiltered' }),
+const client = new OpenAIUnified({
+  logger: logger.child({ name: 'OpenAIUnified' }),
   logLevel: 'debug', // Send all messages to pino, allowing it to filter
 });
 ```
@@ -271,10 +272,10 @@ globalThis.fetch = fetch;
 Or pass it to the client:
 
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 import fetch from 'my-fetch';
 
-const client = new OpenAIUnifiedFiltered({ fetch });
+const client = new OpenAIUnified({ fetch });
 ```
 
 ### Fetch options
@@ -282,9 +283,9 @@ const client = new OpenAIUnifiedFiltered({ fetch });
 If you want to set custom `fetch` options without overriding the `fetch` function, you can provide a `fetchOptions` object when instantiating the client or making a request. (Request-specific options override client options.)
 
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   fetchOptions: {
     // `RequestInit` options
   },
@@ -299,11 +300,11 @@ options to requests:
 <img src="https://raw.githubusercontent.com/stainless-api/sdk-assets/refs/heads/main/node.svg" align="top" width="18" height="21"> **Node** <sup>[[docs](https://github.com/nodejs/undici/blob/main/docs/docs/api/ProxyAgent.md#example---proxyagent-with-fetch)]</sup>
 
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 import * as undici from 'undici';
 
 const proxyAgent = new undici.ProxyAgent('http://localhost:8888');
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   fetchOptions: {
     dispatcher: proxyAgent,
   },
@@ -313,9 +314,9 @@ const client = new OpenAIUnifiedFiltered({
 <img src="https://raw.githubusercontent.com/stainless-api/sdk-assets/refs/heads/main/bun.svg" align="top" width="18" height="21"> **Bun** <sup>[[docs](https://bun.sh/guides/http/proxy)]</sup>
 
 ```ts
-import OpenAIUnifiedFiltered from '@opengg/openai-unified';
+import OpenAIUnified from 'openai-unified';
 
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   fetchOptions: {
     proxy: 'http://localhost:8888',
   },
@@ -325,10 +326,10 @@ const client = new OpenAIUnifiedFiltered({
 <img src="https://raw.githubusercontent.com/stainless-api/sdk-assets/refs/heads/main/deno.svg" align="top" width="18" height="21"> **Deno** <sup>[[docs](https://docs.deno.com/api/deno/~/Deno.createHttpClient)]</sup>
 
 ```ts
-import OpenAIUnifiedFiltered from 'npm:@opengg/openai-unified';
+import OpenAIUnified from 'npm:openai-unified';
 
 const httpClient = Deno.createHttpClient({ proxy: { url: 'http://localhost:8888' } });
-const client = new OpenAIUnifiedFiltered({
+const client = new OpenAIUnified({
   fetchOptions: {
     client: httpClient,
   },
@@ -347,7 +348,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/OpenGG/openai-unified-spec/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/openai-unified-typescript/issues) with questions, bugs, or suggestions.
 
 ## Requirements
 
