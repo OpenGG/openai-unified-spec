@@ -30,7 +30,7 @@ const client = new OpenAIUnifiedFiltered({
 });
 
 const response = await client.chat.createCompletion({
-  messages: [{ content: 'string', role: 'developer' }],
+  messages: [{ role: 'user', content: 'hello' }],
   model: 'string',
 });
 
@@ -50,7 +50,7 @@ const client = new OpenAIUnifiedFiltered({
 });
 
 const params: OpenAIUnifiedFiltered.ChatCreateCompletionParams = {
-  messages: [{ content: 'string', role: 'developer' }],
+  messages: [{ role: 'user', content: 'hello' }],
   model: 'string',
 };
 const response: OpenAIUnifiedFiltered.ChatCreateCompletionResponse = await client.chat.createCompletion(
@@ -69,7 +69,7 @@ a subclass of `APIError` will be thrown:
 <!-- prettier-ignore -->
 ```ts
 const response = await client.chat
-  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'string' })
+  .createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' })
   .catch(async (err) => {
     if (err instanceof OpenAIUnifiedFiltered.APIError) {
       console.log(err.status); // 400
@@ -110,7 +110,7 @@ const client = new OpenAIUnifiedFiltered({
 });
 
 // Or, configure per-request:
-await client.chat.createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'string' }, {
+await client.chat.createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' }, {
   maxRetries: 5,
 });
 ```
@@ -127,7 +127,7 @@ const client = new OpenAIUnifiedFiltered({
 });
 
 // Override per-request:
-await client.chat.createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'string' }, {
+await client.chat.createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' }, {
   timeout: 5 * 1000,
 });
 ```
@@ -151,13 +151,13 @@ Unlike `.asResponse()` this method consumes the body, returning once it is parse
 const client = new OpenAIUnifiedFiltered();
 
 const response = await client.chat
-  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'string' })
+  .createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' })
   .asResponse();
 console.log(response.headers.get('X-My-Header'));
 console.log(response.statusText); // access the underlying Response object
 
 const { data: response, response: raw } = await client.chat
-  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'string' })
+  .createCompletion({ messages: [{ role: 'user', content: 'hello' }], model: 'string' })
   .withResponse();
 console.log(raw.headers.get('X-My-Header'));
 console.log(response.id);
