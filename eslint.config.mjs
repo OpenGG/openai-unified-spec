@@ -25,7 +25,7 @@ export default tseslint.config(
         {
           patterns: [
             {
-              regex: '^openai-unified-filtered(/.*)?',
+              regex: '^@opengg/openai-unified(/.*)?',
               message: 'Use a relative import, not a package import.',
             },
           ],

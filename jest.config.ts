@@ -7,8 +7,8 @@ const config: JestConfigWithTsJest = {
     '^.+\\.(t|j)sx?$': ['@swc/jest', { sourceMaps: 'inline' }],
   },
   moduleNameMapper: {
-    '^openai-unified-filtered$': '<rootDir>/src/index.ts',
-    '^openai-unified-filtered/(.*)$': '<rootDir>/src/$1',
+    '^@opengg/openai-unified$': '<rootDir>/src/index.ts',
+    '^@opengg/openai-unified/(.*)$': '<rootDir>/src/$1',
   },
   modulePathIgnorePatterns: [
     '<rootDir>/ecosystem-tests/',
