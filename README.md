@@ -29,12 +29,11 @@ const client = new OpenAIUnified({
   apiKey: process.env['OPENAI_UNIFIED_API_KEY'], // This is the default and can be omitted
 });
 
-const response = await client.chat.createCompletion({
-  messages: [{ content: 'string', role: 'developer' }],
-  model: 'gpt-4o',
+const createChatCompletionResponse = await client.chat.createChatCompletion({
+  CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' },
 });
 
-console.log(response.id);
+console.log(createChatCompletionResponse.id);
 ```
 
 ### Request & Response types
@@ -49,11 +48,11 @@ const client = new OpenAIUnified({
   apiKey: process.env['OPENAI_UNIFIED_API_KEY'], // This is the default and can be omitted
 });
 
-const params: OpenAIUnified.ChatCreateCompletionParams = {
-  messages: [{ content: 'string', role: 'developer' }],
-  model: 'gpt-4o',
+const params: OpenAIUnified.ChatCreateChatCompletionParams = {
+  CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' },
 };
-const response: OpenAIUnified.ChatCreateCompletionResponse = await client.chat.createCompletion(params);
+const createChatCompletionResponse: OpenAIUnified.CreateChatCompletionResponse =
+  await client.chat.createChatCompletion(params);
 ```
 
 Documentation for each method, request param, and response field are available in docstrings and will appear on hover in most modern editors.
@@ -66,8 +65,10 @@ a subclass of `APIError` will be thrown:
 
 <!-- prettier-ignore -->
 ```ts
-const response = await client.chat
-  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' })
+const createChatCompletionResponse = await client.chat
+  .createChatCompletion({
+    CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' },
+  })
   .catch(async (err) => {
     if (err instanceof OpenAIUnified.APIError) {
       console.log(err.status); // 400
@@ -108,7 +109,7 @@ const client = new OpenAIUnified({
 });
 
 // Or, configure per-request:
-await client.chat.createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' }, {
+await client.chat.createChatCompletion({ CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' } }, {
   maxRetries: 5,
 });
 ```
@@ -125,7 +126,7 @@ const client = new OpenAIUnified({
 });
 
 // Override per-request:
-await client.chat.createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' }, {
+await client.chat.createChatCompletion({ CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' } }, {
   timeout: 5 * 1000,
 });
 ```
@@ -149,16 +150,20 @@ Unlike `.asResponse()` this method consumes the body, returning once it is parse
 const client = new OpenAIUnified();
 
 const response = await client.chat
-  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' })
+  .createChatCompletion({
+    CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' },
+  })
   .asResponse();
 console.log(response.headers.get('X-My-Header'));
 console.log(response.statusText); // access the underlying Response object
 
-const { data: response, response: raw } = await client.chat
-  .createCompletion({ messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' })
+const { data: createChatCompletionResponse, response: raw } = await client.chat
+  .createChatCompletion({
+    CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' },
+  })
   .withResponse();
 console.log(raw.headers.get('X-My-Header'));
-console.log(response.id);
+console.log(createChatCompletionResponse.id);
 ```
 
 ### Logging
@@ -238,7 +243,7 @@ parameter. This library doesn't validate at runtime that the request matches the
 send will be sent as-is.
 
 ```ts
-client.chat.createCompletion({
+client.chat.createChatCompletion({
   // ...
   // @ts-expect-error baz is not yet public
   baz: 'undocumented option',
