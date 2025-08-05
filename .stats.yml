@@ -1,4 +1,4 @@
 configured_endpoints: 1
 openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/oc-corp%2Fopenai-unified-331724ad1af8069dd45aea6d70ed0c6237f2350ab184efa056101352c7c57d11.yml
 openapi_spec_hash: c962199797a06ca857ea56eb7be80f1a
-config_hash: 8461c8c4fce401a2c8a9401937372cff
+config_hash: dfe4a1344da5511a9bd7885d1fce3c0e
