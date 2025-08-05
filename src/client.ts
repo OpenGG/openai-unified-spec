@@ -18,12 +18,58 @@ import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
 import {
   Chat,
+  ChatCompletionFunctionCallOption,
+  ChatCompletionFunctions,
   ChatCompletionMessageToolCall,
+  ChatCompletionMessageToolCallChunk,
+  ChatCompletionMessageToolCalls,
+  ChatCompletionNamedToolChoice,
+  ChatCompletionRequestAssistantMessage,
+  ChatCompletionRequestAssistantMessageContentPart,
+  ChatCompletionRequestDeveloperMessage,
+  ChatCompletionRequestFunctionMessage,
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageContentPartAudio,
+  ChatCompletionRequestMessageContentPartFile,
+  ChatCompletionRequestMessageContentPartImage,
+  ChatCompletionRequestMessageContentPartRefusal,
   ChatCompletionRequestMessageContentPartText,
+  ChatCompletionRequestSystemMessage,
+  ChatCompletionRequestSystemMessageContentPart,
+  ChatCompletionRequestToolMessage,
+  ChatCompletionRequestToolMessageContentPart,
+  ChatCompletionRequestUserMessage,
+  ChatCompletionRequestUserMessageContentPart,
+  ChatCompletionResponseMessage,
+  ChatCompletionStreamOptions,
+  ChatCompletionStreamResponseDelta,
   ChatCompletionTokenLogprob,
-  ChatCreateCompletionParams,
-  ChatCreateCompletionResponse,
+  ChatCompletionTool,
+  ChatCompletionToolChoiceOption,
+  ChatCreateChatCompletionParams,
+  CompletionUsage,
+  CreateChatCompletionRequest,
+  CreateChatCompletionResponse,
+  CreateChatCompletionStreamResponse,
+  CreateModelResponseProperties,
+  FunctionObject,
+  FunctionParameters,
+  Metadata,
+  ModelIDsShared,
+  ModelResponseProperties,
+  ParallelToolCalls,
+  PredictionContent,
+  ReasoningEffort,
+  ResponseFormatJsonObject,
+  ResponseFormatJsonSchema,
+  ResponseFormatJsonSchemaSchema,
+  ResponseFormatText,
+  ResponseModalities,
   ServiceTier,
+  StopConfiguration,
+  VoiceIDsShared,
+  WebSearchContextSize,
+  WebSearchLocation,
 } from './resources/chat';
 import { type Fetch } from './internal/builtin-types';
 import { HeadersLike, NullableHeaders, buildHeaders } from './internal/headers';
@@ -40,14 +86,14 @@ import { isEmptyObj } from './internal/utils/values';
 
 export interface ClientOptions {
   /**
-   * Defaults to process.env['OPENAI_UNIFIED_FILTERED_API_KEY'].
+   * Defaults to process.env['OPENAI_UNIFIED_API_KEY'].
    */
-  apiKey?: string | null | undefined;
+  apiKey?: string | undefined;
 
   /**
    * Override the default base URL for the API, e.g., "https://api.example.com/v2/"
    *
-   * Defaults to process.env['OPENAI_UNIFIED_FILTERED_BASE_URL'].
+   * Defaults to process.env['OPENAI_UNIFIED_BASE_URL'].
    */
   baseURL?: string | null | undefined;
 
@@ -101,7 +147,7 @@ export interface ClientOptions {
   /**
    * Set the log level.
    *
-   * Defaults to process.env['OPENAI_UNIFIED_FILTERED_LOG'] or 'warn' if it isn't set.
+   * Defaults to process.env['OPENAI_UNIFIED_LOG'] or 'warn' if it isn't set.
    */
   logLevel?: LogLevel | undefined;
 
@@ -114,10 +160,10 @@ export interface ClientOptions {
 }
 
 /**
- * API Client for interfacing with the OpenAI Unified Filtered API.
+ * API Client for interfacing with the OpenAI Unified API.
  */
-export class OpenAIUnifiedFiltered {
-  apiKey: string | null;
+export class OpenAIUnified {
+  apiKey: string;
 
   baseURL: string;
   maxRetries: number;
@@ -132,10 +178,10 @@ export class OpenAIUnifiedFiltered {
   private _options: ClientOptions;
 
   /**
-   * API Client for interfacing with the OpenAI Unified Filtered API.
+   * API Client for interfacing with the OpenAI Unified API.
    *
-   * @param {string | null | undefined} [opts.apiKey=process.env['OPENAI_UNIFIED_FILTERED_API_KEY'] ?? null]
-   * @param {string} [opts.baseURL=process.env['OPENAI_UNIFIED_FILTERED_BASE_URL'] ?? https://api.openai.com/v1] - Override the default base URL for the API.
+   * @param {string | undefined} [opts.apiKey=process.env['OPENAI_UNIFIED_API_KEY'] ?? undefined]
+   * @param {string} [opts.baseURL=process.env['OPENAI_UNIFIED_BASE_URL'] ?? https://api.openai.com/v1] - Override the default base URL for the API.
    * @param {number} [opts.timeout=1 minute] - The maximum amount of time (in milliseconds) the client will wait for a response before timing out.
    * @param {MergedRequestInit} [opts.fetchOptions] - Additional `RequestInit` options to be passed to `fetch` calls.
    * @param {Fetch} [opts.fetch] - Specify a custom `fetch` function implementation.
@@ -144,10 +190,16 @@ export class OpenAIUnifiedFiltered {
    * @param {Record<string, string | undefined>} opts.defaultQuery - Default query parameters to include with every request to the API.
    */
   constructor({
-    baseURL = readEnv('OPENAI_UNIFIED_FILTERED_BASE_URL'),
-    apiKey = readEnv('OPENAI_UNIFIED_FILTERED_API_KEY') ?? null,
+    baseURL = readEnv('OPENAI_UNIFIED_BASE_URL'),
+    apiKey = readEnv('OPENAI_UNIFIED_API_KEY'),
     ...opts
   }: ClientOptions = {}) {
+    if (apiKey === undefined) {
+      throw new Errors.OpenAIUnifiedError(
+        "The OPENAI_UNIFIED_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAIUnified client with an apiKey option, like new OpenAIUnified({ apiKey: 'My API Key' }).",
+      );
+    }
+
     const options: ClientOptions = {
       apiKey,
       ...opts,
@@ -155,18 +207,14 @@ export class OpenAIUnifiedFiltered {
     };
 
     this.baseURL = options.baseURL!;
-    this.timeout = options.timeout ?? OpenAIUnifiedFiltered.DEFAULT_TIMEOUT /* 1 minute */;
+    this.timeout = options.timeout ?? OpenAIUnified.DEFAULT_TIMEOUT /* 1 minute */;
     this.logger = options.logger ?? console;
     const defaultLogLevel = 'warn';
     // Set default logLevel early so that we can log a warning in parseLogLevel.
     this.logLevel = defaultLogLevel;
     this.logLevel =
       parseLogLevel(options.logLevel, 'ClientOptions.logLevel', this) ??
-      parseLogLevel(
-        readEnv('OPENAI_UNIFIED_FILTERED_LOG'),
-        "process.env['OPENAI_UNIFIED_FILTERED_LOG']",
-        this,
-      ) ??
+      parseLogLevel(readEnv('OPENAI_UNIFIED_LOG'), "process.env['OPENAI_UNIFIED_LOG']", this) ??
       defaultLogLevel;
     this.fetchOptions = options.fetchOptions;
     this.maxRetries = options.maxRetries ?? 2;
@@ -209,22 +257,10 @@ export class OpenAIUnifiedFiltered {
   }
 
   protected validateHeaders({ values, nulls }: NullableHeaders) {
-    if (this.apiKey && values.get('authorization')) {
-      return;
-    }
-    if (nulls.has('authorization')) {
-      return;
-    }
-
-    throw new Error(
-      'Could not resolve authentication method. Expected the apiKey to be set. Or for the "Authorization" headers to be explicitly omitted',
-    );
+    return;
   }
 
   protected async authHeaders(opts: FinalRequestOptions): Promise<NullableHeaders | undefined> {
-    if (this.apiKey == null) {
-      return undefined;
-    }
     return buildHeaders([{ Authorization: `Bearer ${this.apiKey}` }]);
   }
 
@@ -241,7 +277,7 @@ export class OpenAIUnifiedFiltered {
         if (value === null) {
           return `${encodeURIComponent(key)}=`;
         }
-        throw new Errors.OpenAIUnifiedFilteredError(
+        throw new Errors.OpenAIUnifiedError(
           `Cannot stringify type ${typeof value}; Expected string, number, boolean, or null. If you need to pass nested query parameters, you can manually encode them, e.g. { query: { 'foo[key1]': value1, 'foo[key2]': value2 } }, and please open a GitHub issue requesting better support for your use case.`,
         );
       })
@@ -713,10 +749,10 @@ export class OpenAIUnifiedFiltered {
     }
   }
 
-  static OpenAIUnifiedFiltered = this;
+  static OpenAIUnified = this;
   static DEFAULT_TIMEOUT = 60000; // 1 minute
 
-  static OpenAIUnifiedFilteredError = Errors.OpenAIUnifiedFilteredError;
+  static OpenAIUnifiedError = Errors.OpenAIUnifiedError;
   static APIError = Errors.APIError;
   static APIConnectionError = Errors.APIConnectionError;
   static APIConnectionTimeoutError = Errors.APIConnectionTimeoutError;
@@ -734,17 +770,63 @@ export class OpenAIUnifiedFiltered {
 
   chat: API.Chat = new API.Chat(this);
 }
-OpenAIUnifiedFiltered.Chat = Chat;
-export declare namespace OpenAIUnifiedFiltered {
+OpenAIUnified.Chat = Chat;
+export declare namespace OpenAIUnified {
   export type RequestOptions = Opts.RequestOptions;
 
   export {
     Chat as Chat,
+    type ChatCompletionFunctionCallOption as ChatCompletionFunctionCallOption,
+    type ChatCompletionFunctions as ChatCompletionFunctions,
     type ChatCompletionMessageToolCall as ChatCompletionMessageToolCall,
+    type ChatCompletionMessageToolCallChunk as ChatCompletionMessageToolCallChunk,
+    type ChatCompletionMessageToolCalls as ChatCompletionMessageToolCalls,
+    type ChatCompletionNamedToolChoice as ChatCompletionNamedToolChoice,
+    type ChatCompletionRequestAssistantMessage as ChatCompletionRequestAssistantMessage,
+    type ChatCompletionRequestAssistantMessageContentPart as ChatCompletionRequestAssistantMessageContentPart,
+    type ChatCompletionRequestDeveloperMessage as ChatCompletionRequestDeveloperMessage,
+    type ChatCompletionRequestFunctionMessage as ChatCompletionRequestFunctionMessage,
+    type ChatCompletionRequestMessage as ChatCompletionRequestMessage,
+    type ChatCompletionRequestMessageContentPartAudio as ChatCompletionRequestMessageContentPartAudio,
+    type ChatCompletionRequestMessageContentPartFile as ChatCompletionRequestMessageContentPartFile,
+    type ChatCompletionRequestMessageContentPartImage as ChatCompletionRequestMessageContentPartImage,
+    type ChatCompletionRequestMessageContentPartRefusal as ChatCompletionRequestMessageContentPartRefusal,
     type ChatCompletionRequestMessageContentPartText as ChatCompletionRequestMessageContentPartText,
+    type ChatCompletionRequestSystemMessage as ChatCompletionRequestSystemMessage,
+    type ChatCompletionRequestSystemMessageContentPart as ChatCompletionRequestSystemMessageContentPart,
+    type ChatCompletionRequestToolMessage as ChatCompletionRequestToolMessage,
+    type ChatCompletionRequestToolMessageContentPart as ChatCompletionRequestToolMessageContentPart,
+    type ChatCompletionRequestUserMessage as ChatCompletionRequestUserMessage,
+    type ChatCompletionRequestUserMessageContentPart as ChatCompletionRequestUserMessageContentPart,
+    type ChatCompletionResponseMessage as ChatCompletionResponseMessage,
+    type ChatCompletionStreamOptions as ChatCompletionStreamOptions,
+    type ChatCompletionStreamResponseDelta as ChatCompletionStreamResponseDelta,
     type ChatCompletionTokenLogprob as ChatCompletionTokenLogprob,
+    type ChatCompletionTool as ChatCompletionTool,
+    type ChatCompletionToolChoiceOption as ChatCompletionToolChoiceOption,
+    type CompletionUsage as CompletionUsage,
+    type CreateChatCompletionRequest as CreateChatCompletionRequest,
+    type CreateChatCompletionResponse as CreateChatCompletionResponse,
+    type CreateChatCompletionStreamResponse as CreateChatCompletionStreamResponse,
+    type CreateModelResponseProperties as CreateModelResponseProperties,
+    type FunctionObject as FunctionObject,
+    type FunctionParameters as FunctionParameters,
+    type Metadata as Metadata,
+    type ModelIDsShared as ModelIDsShared,
+    type ModelResponseProperties as ModelResponseProperties,
+    type ParallelToolCalls as ParallelToolCalls,
+    type PredictionContent as PredictionContent,
+    type ReasoningEffort as ReasoningEffort,
+    type ResponseFormatJsonObject as ResponseFormatJsonObject,
+    type ResponseFormatJsonSchema as ResponseFormatJsonSchema,
+    type ResponseFormatJsonSchemaSchema as ResponseFormatJsonSchemaSchema,
+    type ResponseFormatText as ResponseFormatText,
+    type ResponseModalities as ResponseModalities,
     type ServiceTier as ServiceTier,
-    type ChatCreateCompletionResponse as ChatCreateCompletionResponse,
-    type ChatCreateCompletionParams as ChatCreateCompletionParams,
+    type StopConfiguration as StopConfiguration,
+    type VoiceIDsShared as VoiceIDsShared,
+    type WebSearchContextSize as WebSearchContextSize,
+    type WebSearchLocation as WebSearchLocation,
+    type ChatCreateChatCompletionParams as ChatCreateChatCompletionParams,
   };
 }

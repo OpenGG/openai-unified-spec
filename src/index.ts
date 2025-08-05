@@ -1,12 +1,12 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-export { OpenAIUnifiedFiltered as default } from './client';
+export { OpenAIUnified as default } from './client';
 
 export { type Uploadable, toFile } from './core/uploads';
 export { APIPromise } from './core/api-promise';
-export { OpenAIUnifiedFiltered, type ClientOptions } from './client';
+export { OpenAIUnified, type ClientOptions } from './client';
 export {
-  OpenAIUnifiedFilteredError,
+  OpenAIUnifiedError,
   APIError,
   APIConnectionError,
   APIConnectionTimeoutError,

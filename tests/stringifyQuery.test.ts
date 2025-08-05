@@ -1,8 +1,8 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import { OpenAIUnifiedFiltered } from '@opengg/openai-unified';
+import { OpenAIUnified } from 'openai-unified';
 
-const { stringifyQuery } = OpenAIUnifiedFiltered.prototype as any;
+const { stringifyQuery } = OpenAIUnified.prototype as any;
 
 describe(stringifyQuery, () => {
   for (const [input, expected] of [
