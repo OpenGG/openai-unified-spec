@@ -770,7 +770,9 @@ export class OpenAIUnified {
 
   chat: API.Chat = new API.Chat(this);
 }
+
 OpenAIUnified.Chat = Chat;
+
 export declare namespace OpenAIUnified {
   export type RequestOptions = Opts.RequestOptions;
 
