@@ -422,7 +422,7 @@ export class OpenAIUnified {
     const response = await this.fetchWithTimeout(url, req, timeout, controller).catch(castToError);
     const headersTime = Date.now();
 
-    if (response instanceof Error) {
+    if (response instanceof globalThis.Error) {
       const retryMessage = `retrying, ${retriesRemaining} attempts remaining`;
       if (options.signal?.aborted) {
         throw new Errors.APIUserAbortError();
@@ -729,7 +729,7 @@ export class OpenAIUnified {
         // Preserve legacy string encoding behavior for now
         headers.values.has('content-type')) ||
       // `Blob` is superset of `File`
-      body instanceof Blob ||
+      ((globalThis as any).Blob && body instanceof (globalThis as any).Blob) ||
       // `FormData` -> `multipart/form-data`
       body instanceof FormData ||
       // `URLSearchParams` -> `application/x-www-form-urlencoded`
@@ -770,7 +770,9 @@ export class OpenAIUnified {
 
   chat: API.Chat = new API.Chat(this);
 }
+
 OpenAIUnified.Chat = Chat;
+
 export declare namespace OpenAIUnified {
   export type RequestOptions = Opts.RequestOptions;
 

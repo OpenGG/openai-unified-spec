@@ -8,7 +8,7 @@ const client = new OpenAIUnified({
 });
 
 describe('resource chat', () => {
-  // skipped: tests are disabled for the time being
+  // Prism tests are disabled
   test.skip('createChatCompletion: only required params', async () => {
     const responsePromise = client.chat.createChatCompletion({
       CreateChatCompletionRequest: { messages: [{ content: 'string', role: 'developer' }], model: 'gpt-4o' },
@@ -22,7 +22,7 @@ describe('resource chat', () => {
     expect(dataAndResponse.response).toBe(rawResponse);
   });
 
-  // skipped: tests are disabled for the time being
+  // Prism tests are disabled
   test.skip('createChatCompletion: required and optional params', async () => {
     const response = await client.chat.createChatCompletion({
       CreateChatCompletionRequest: {
